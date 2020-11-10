@@ -1,4 +1,36 @@
-let gameGrid = [];
+const gameGridContainer = document.querySelector("#game-grid-container");
+
+(function(){
+    const div = document.createElement('div'); 
+    div.classList.add("cells"); 
+    div.style.borderRight = "0.1px solid black";
+    div.style.borderBottom = "0.1px solid black";
+    console.log("hello");
+
+    for (let i=0; i<9; i++){
+        div.setAttribute("id" , i); 
+        gameGridContainer.appendChild(div.cloneNode()); 
+
+    }
+
+})();
+
+const gameGrid = document.querySelectorAll(".cells");
+
+
+for (let i=0; i<gameGrid.length; i++){
+    gameGrid[i].textContent = "x";
+}
+
+
+
+
+
+
+
+
+
+
 //Player Object created using Factory Design Pattern 
 const Player = function (playerName, playerMark) {
 
@@ -46,18 +78,28 @@ const gameBoard = (function (gameGrid) {
 
     }
 
-    const playSquare = function (player, move) {
+    const addMove = function (player, move) {
         player.addMove(move);
         drawMark(player.getPlayerMark(), move.getCoordinates());
     }
 
     return {
-        playSquare
+        addMove,
     }
 
 
 
 })(gameGrid);
+
+
+
+
+
+
+
+
+
+
 
 let player1 = Player("sam", "x");
 console.log(player1.getPlayerName() + " " + player1.getPlayerMark() + " " + player1.getScore())
