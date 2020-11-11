@@ -1,36 +1,40 @@
 const gameGridContainer = document.querySelector("#game-grid-container");
 const markedCell = [];
 
+
+/* IIFE that creates the 3x3 Game Grid and puts it in the "game-grid-container"*/
 (function () {
     const div = document.createElement('div');
+
+    /* The squares in the grid are gonna be grouped under the class "cells"*/
     div.classList.add("cells");
+
+    /*Adding styling elements*/
     div.style.borderRight = "0.1px solid black";
     div.style.borderBottom = "0.1px solid black";
+    div.style.display = "flex";
     div.style.alignItems = "center";
     div.style.justifyContent = "center";
 
-    div.style.display = "flex";
-
+    /*Attaching the cells to the grid*/
     for (let i = 0; i < 9; i++) {
-        div.setAttribute("id", i );
+        div.setAttribute("id", i);
         gameGridContainer.appendChild(div.cloneNode());
 
     }
 
 })();
 
+/*The Nodelist that contains the grid cells*/
 const gameGrid = document.querySelectorAll(".cells");
 
 
-for (let i=6; i<9; i++){
-    gameGrid[i].innerText = "x";
-}
 
 
 
 
 
-//Player Object created using Factory Design Pattern 
+/*Player Object created using Factory Design Pattern*/
 const Player = function (playerName, playerMark) {
 
 
@@ -66,23 +70,83 @@ const Player = function (playerName, playerMark) {
 };
 
 
+/* Game Object that contains the logic of the game*/
+const game = (function(gameGrid){
+
+    const isThereAWinner = function (x, y, z) {
+
+        if (gameGrid[x].innerText === gameGrid[y].innerText &&
+            gameGrid[y].innerText === gameGrid[z].innerText && 
+            gameGrid[x].innerText != "" ) {
+            return {
+                win: true,
+                winnerMark: gameGrid[x].innerText,
+                winningSequence: [x, y, z]
+            }
+        }
+        else {
+            return { win: false };
+        }
+
+    }
+
+    const checkForWins = function () {
+
+
+        for (let i = 0; i <= 6; i += 3) {
+            let winner = isThereAWinner(0 + i, 1 + i, 2 + i);
+            if (winner.win) {
+                console.log(winner.winnerMark);
+                console.log(JSON.stringify(winner.winningSequence));
+                return winner;
+            }
+        }
+
+        for (let i=0; i<3; i++){
+             winner = isThereAWinner (0+i, 3+i, 6+i);
+            if (winner.win){
+                console.log(winner.winnerMark);
+                console.log(JSON.stringify(winner.winningSequence));
+                return winner;
+            }
+        }
+
+        winner = isThereAWinner (0, 4, 8);
+        if (winner.win){
+            console.log(winner.winnerMark);
+            console.log(JSON.stringify(winner.winningSequence));
+            return winner;
+        }
+
+        winner = isThereAWinner (2, 4, 6);
+        if (winner.win){
+            console.log(winner.winnerMark);
+            console.log(JSON.stringify(winner.winningSequence));
+            return winner;
+        }
+    }
+
+    return {
+        checkForWins
+    }
+
+
+
+
+})(gameGrid)
+
+
+
 
 //Gameboard Object created using Revealing Module Design Pattern
 const gameBoard = (function (gameGrid) {
 
-
-   
-
-
-
     const drawMark = function (e) {
         if (!markedCell[e.target.id]) {
+            //TODO add the mark dynamically based on the player
             e.target.innerText = "x";
             markedCell[e.target.id] = true;
-            console.log(e.target.id);
-            console.log(e.target.innerText);
-
-
+            game.checkForWins();
         }
     }
 
@@ -91,76 +155,14 @@ const gameBoard = (function (gameGrid) {
         drawMark(player.getPlayerMark(), move.getCoordinates());
     }
 
-    const isThereAWinner = function(x, y, z){
-        console.log (gameGrid[x].innerText);
-        console.log (gameGrid[y].innerText);
-        console.log (gameGrid[z].innerText);
-
-        
-        if (gameGrid[x].innerText === gameGrid[y].innerText &&
-           gameGrid[y].innerText === gameGrid[z].innerText && (gameGrid[x].innerText == "x" || gameGrid[x].innerText == "o") ){
-                console.log("Z");
-            return {
-                win: true, 
-                winnerMark: gameGrid[x].innerText,
-                winningSequence: [x,y,z]
-            }
-        }
-            else {
-                return {win: false};
-            }
-
-    }
-
-    const checkForWins = function(){
-
-
-            for (let i=0; i<=6; i+=3){
-               let winner = isThereAWinner (0+i, 1+i, 2+i);
-                if (winner.win){
-                    console.log(winner.winnerMark);
-                    console.log(JSON.stringify(winner.winningSequence));
-                    return winner;
-                }
-
-                
-            }
-
-            // for (let i=0; i<3; i++){
-            //      winner = isThereAWinner (0+i, 3+i, 6+i);
-            //     if (winner.win){
-            //         console.log(winner.winnerMark);
-            //         console.log(JSON.stringify(winner.winningSequence));
-            //         return winner;
-            //     }
-            // }
-
-            //  winner = isThereAWinner (0, 4, 8);
-            // if (winner.win){
-            //     console.log(winner.winnerMark);
-            //     console.log(JSON.stringify(winner.winningSequence));
-            //     return winner;
-            // }
-
-            //  winner = isThereAWinner (2, 4, 7);
-            // if (winner.win){
-            //     console.log(winner.winnerMark);
-            //     console.log(JSON.stringify(winner.winningSequence));
-            //     return winner;
-            // }
-    }
-
-
     return {
         addMove,
         drawMark,
-        checkForWins
     }
 
 
 
 })(gameGrid);
-
 
 
 
@@ -182,4 +184,4 @@ for (let i = 0; i < gameGrid.length; i++) {
 }
 
 
-gameBoard.checkForWins();
+game.checkForWins();
