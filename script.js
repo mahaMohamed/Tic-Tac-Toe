@@ -70,6 +70,9 @@ const Player = function (playerName, playerMark) {
 
 };
 
+let player2 = Player("human", "x");
+let player1 = Player("computer", "o");
+
 
 /* Game Object that contains the logic of the game*/
 const game = (function (gameGrid) {
@@ -97,8 +100,8 @@ const game = (function (gameGrid) {
         for (let i = 0; i <= 6; i += 3) {
             let winner = isThereAWinner(0 + i, 1 + i, 2 + i);
             if (winner.win) {
-                console.log(winner.winnerMark);
-                console.log(JSON.stringify(winner.winningSequence));
+                // console.log(winner.winnerMark);
+                // console.log(JSON.stringify(winner.winningSequence));
                 return winner;
             }
         }
@@ -106,23 +109,23 @@ const game = (function (gameGrid) {
         for (let i = 0; i < 3; i++) {
             winner = isThereAWinner(0 + i, 3 + i, 6 + i);
             if (winner.win) {
-                console.log(winner.winnerMark);
-                console.log(JSON.stringify(winner.winningSequence));
+                // console.log(winner.winnerMark);
+                // console.log(JSON.stringify(winner.winningSequence));
                 return winner;
             }
         }
 
         winner = isThereAWinner(0, 4, 8);
         if (winner.win) {
-            console.log(winner.winnerMark);
-            console.log(JSON.stringify(winner.winningSequence));
+            // console.log(winner.winnerMark);
+            // console.log(JSON.stringify(winner.winningSequence));
             return winner;
         }
 
         winner = isThereAWinner(2, 4, 6);
         if (winner.win) {
-            console.log(winner.winnerMark);
-            console.log(JSON.stringify(winner.winningSequence));
+            // console.log(winner.winnerMark);
+            // console.log(JSON.stringify(winner.winningSequence));
             return winner;
         }
 
@@ -148,17 +151,13 @@ const game = (function (gameGrid) {
 
 
         while (true) {
-            console.log("in while loop");
             randomNumber = getRandomInt();
             if (markedCell[randomNumber] == false) {
-                console.log(randomNumber);
                 break;
             }
         }
 
-
-
-        gameGrid[randomNumber].innerText = "o";
+        gameGrid[randomNumber].innerText = player2.getPlayerMark();
         markedCell[randomNumber] = true;
 
     }
@@ -191,56 +190,59 @@ const game = (function (gameGrid) {
 const gameBoard = (function (gameGrid) {
 
 
+    const declareWinner = function (winner) {
+        for (let i = 0; i < gameGrid.length; i++) {
+            gameGrid[i].removeEventListener("click", gameBoard.playGame);
+        }
+
+        alert("player " + winner + " has won the game");
+
+    }
 
     const playGame = function (e) {
 
-        let winner;
+        let winner = null;
 
         if (!markedCell[e.target.id]) {
-            e.target.innerText = "x";
+            e.target.innerText = player1.getPlayerMark();
             markedCell[e.target.id] = true;
             turns--;
 
+
+      
             setTimeout(function () {
-
                 winner = game.checkForWins();
-                if (winner != null) {
-                    for (let i = 0; i < gameGrid.length; i++) {
-                        gameGrid[i].removeEventListener("click", gameBoard.playGame);
-                    }
-
-                    console.log("we have a winner");
+                if (winner != null){
+                    declareWinner(winner.winnerMark);
                 }
 
-
             }, 100);
+
+
+            setTimeout(function(){
+                if (game.checkForEnd() == true && winner == null ){
+                    alert("game has tied");
+                }
+    
+            }, 110)
+            
 
             setTimeout(function () {
                 if (winner == null) {
                     setTimeout(game.playComputerTurn, 150);
 
                     setTimeout(function () {
-
                         winner = game.checkForWins();
-                        if (winner != null) {
-                            for (let i = 0; i < gameGrid.length; i++) {
-                                gameGrid[i].removeEventListener("click", gameBoard.playGame);
-                            }
-
-                            console.log("we have a winner");
-                        }
-
-
+                        if (winner != null)
+                            declareWinner(winner.winnerMark);
                     }, 170);
-
-
                 }
             }, 120);
 
+
+
         }
     }
-
-
 
 
 
@@ -278,8 +280,6 @@ for (let i = 0; i < gameGrid.length; i++) {
 
 
 
-let player1 = Player("human", "x");
-let player2 = Player("computer", "o");
 
 
 
