@@ -75,12 +75,12 @@ const game = (function (gameGrid) {
 
     const _isThereAWinner = function (x, y, z) {
 
-        if (gameGrid[x].innerText === gameGrid[y].innerText &&
-            gameGrid[y].innerText === gameGrid[z].innerText &&
-            gameGrid[x].innerText != "") {
+        if (gameGrid[x].innerHTML === gameGrid[y].innerHTML &&
+            gameGrid[y].innerHTML === gameGrid[z].innerHTML &&
+            gameGrid[x].innerHTML != "") {
             return {
                 win: true,
-                winnerMark: gameGrid[x].innerText,
+                winnerMark: gameGrid[x].innerHTML,
                 winningSequence: [x, y, z]
             }
         }
@@ -145,10 +145,10 @@ const game = (function (gameGrid) {
         //     }
         // }
 
-        // gameGrid[randomNumber].innerText = computerPlayer.getPlayerMark();
+        // gameGrid[randomNumber].innerHTML = computerPlayer.getPlayerMark();
 
         let computerBestMove = minimax(gameGrid, computerPlayer).id;
-        gameGrid[computerBestMove].innerText = computerPlayer.getPlayerMark();
+        gameGrid[computerBestMove].innerHTML = computerPlayer.getPlayerMark();
         markedCell[computerBestMove] = true;
 
     }
@@ -193,14 +193,14 @@ const game = (function (gameGrid) {
                 }
             }
 
-            else if (winner.winnerMark === computerPlayer.getPlayerMark()){
+            else if (winner.winnerMark === computerPlayer.getPlayerMark()) {
                 return {
                     evaluation: 10
                 }
             }
         }
 
-        else if (checkForEnd() === true){
+        else if (checkForEnd() === true) {
             return {
                 evaluation: 0
             }
@@ -220,10 +220,10 @@ const game = (function (gameGrid) {
             let id = emptySpaces[i];
             move.id = id;
 
-            let backup = gameGrid[id].innerText;
-            
+            let backup = gameGrid[id].innerHTML;
+
             //Playing the empty space
-            gameGrid[id].innerText = player.getPlayerMark();
+            gameGrid[id].innerHTML = player.getPlayerMark();
             markedCell[id] = true;
 
 
@@ -239,7 +239,7 @@ const game = (function (gameGrid) {
 
 
             //Restoring the grid to its original state
-            gameGrid[id].innerText = backup;
+            gameGrid[id].innerHTML = backup;
             markedCell[id] = false;
 
             //Saving the move to further evaluate the moves based on their weight 
@@ -320,7 +320,7 @@ const gameBoard = (function (gameGrid) {
         let winner = null;
 
         if (!markedCell[e.target.id]) {
-            e.target.innerText = humanPlayer.getPlayerMark();
+            e.target.innerHTML = humanPlayer.getPlayerMark();
             markedCell[e.target.id] = true;
             turns--;
 
@@ -332,7 +332,7 @@ const gameBoard = (function (gameGrid) {
                     _declareWinner(winner.winnerMark);
                 }
 
-            }, 100);
+            }, 1);
 
 
             setTimeout(function () {
@@ -340,7 +340,7 @@ const gameBoard = (function (gameGrid) {
                     alert("game has tied");
                 }
 
-            }, 110)
+            },2)
 
 
             setTimeout(function () {
@@ -351,9 +351,9 @@ const gameBoard = (function (gameGrid) {
                         winner = game.checkForWins();
                         if (winner != null)
                             _declareWinner(winner.winnerMark);
-                    }, 170);
+                    }, 4);
                 }
-            }, 120);
+            },3);
 
 
 
