@@ -1,7 +1,8 @@
 
 body{
-  font-family: "Indie Flower";
-    /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; */
+    font-family: "Comfortaa";
+    background-color: black;
+    color: white;
 }
 
 #main-container{
@@ -14,7 +15,10 @@ body{
 
 h1{
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 70px;
+    font-size: 50px;
+    font-weight: bolder;
+    
 }
 
 
@@ -24,18 +28,46 @@ h1{
     height: 500px;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    border: 1px solid black;
     align-self: center;
     border-collapse: collapse;
     font-size: 80px;
-    font-family: "Indie Flower";
     text-align: center;
+    transition:font-size 1s;
 
 }
 
 
+
+#result-modal{
+    display: none; 
+    margin-top: 50px;
+    z-index: 1;
+    position: fixed;
+    background-color: rgba(255, 255, 255, 1);
+    color: black;
+    width: 350px;
+    height: fit-content;
+    padding: 40px;
+    font-family: "Comfortaa";
+    font-size: 50px;
+    text-align: center;
+    font-weight: bolder;
+
+}
+
 button{
     width: fit-content;
+    height: fit-content;
+    padding: 15px;
     margin-top: 20px;
+    border: none; 
+    background-color: black; 
+    color: white;
+    font-family: "Comfortaa";
+    margin-top: 50px;
 
+}
+
+button:hover{
+    background-color: rgb(139, 138, 138);
 }

@@ -1,6 +1,14 @@
 const gameGridContainer = document.querySelector("#game-grid-container");
+const resultModal = document.querySelector("#result-modal");
+const resultText = document.querySelector("#result-text");
+const playAgainButton = document.querySelector("#play-again");
 const markedCell = [false, false, false, false, false, false, false, false, false];
 let turns = 9;
+let humanPlayerSFX = new Audio ("sounds/player1.wav");
+let computerPlayerSFX = new Audio ("sounds/player2.wav");
+let losingSFX = new Audio("sounds/losing.wav");
+let tyingSFX = new Audio ("sounds/tie.wav");
+
 
 
 /* IIFE that creates the 3x3 Game Grid and puts it in the "game-grid-container"*/
@@ -11,17 +19,34 @@ let turns = 9;
     div.classList.add("cells");
 
     /*Adding styling elements*/
-    div.style.borderRight = "0.1px solid black";
-    div.style.borderBottom = "0.1px solid black";
     div.style.display = "flex";
     div.style.alignItems = "center";
     div.style.justifyContent = "center";
 
     /*Attaching the cells to the grid*/
     for (let i = 0; i < 9; i++) {
+        if (i == 2 || i == 5 ){
+            div.style.borderBottom = "thick solid white";
+        }
+
+        else if (i == 6 || i == 7 ){
+            div.style.borderRight = "thick solid white";
+
+        }
+
+        else if (i == 0 || i == 1 || i == 3 || i == 4) {
+            div.style.borderRight = "thick solid white"; 
+            div.style.borderBottom = "thick solid white";
+        
+
+        }
+
+
         div.setAttribute("id", i);
-        // div.setAttribute("move" , i);
         gameGridContainer.appendChild(div.cloneNode());
+        div.style.borderBottom = "none";
+        div.style.borderRight = "none";
+
 
     }
 
@@ -35,37 +60,18 @@ const gameGrid = document.querySelectorAll(".cells");
 /*Player Object created using Factory Design Pattern*/
 const Player = function (playerName, playerMark) {
 
-
-    let score = 0;
-    const playerMoves = [];
-    const play = function () {
-
-    }
-
-    const getScore = () => score;
     const getPlayerName = () => playerName;
     const getPlayerMark = () => playerMark;
-    const getPlayerMoves = () => playerMoves;
-    const addMove = move => {
-        playerMoves.push(move);
-    }
-    const playerWin = () => {
-        score++;
-    }
 
 
     return {
         getPlayerName,
-        getPlayerMoves,
         getPlayerMark,
-        getScore,
-        play,
-        addMove,
-        playerWin
-
     };
 
 };
+
+
 
 let humanPlayer = Player("human", "x");
 let computerPlayer = Player("computer", "o");
@@ -79,7 +85,6 @@ const game = (function (gameGrid) {
         if (gameGrid[x].moveMark === gameGrid[y].moveMark &&
             gameGrid[y].moveMark === gameGrid[z].moveMark &&
            ( gameGrid[x].moveMark == "x" || gameGrid[x].moveMark == "o")) {
-            //    console.log(x,y,z);
             return {
                 win: true,
                 winnerMark: gameGrid[x].moveMark,
@@ -154,6 +159,7 @@ const game = (function (gameGrid) {
         let computerBestMove = minimax(gameGrid, computerPlayer, 0).id;
 
         gameGrid[computerBestMove].innerHTML = computerPlayer.getPlayerMark();
+        computerPlayerSFX.play();
         markedCell[computerBestMove] = true;
         gameGrid[computerBestMove].moveMark = computerPlayer.getPlayerMark();
 
@@ -165,6 +171,7 @@ const game = (function (gameGrid) {
             if (markedCell[i] == false)
                 return false;
         }
+
 
         return true;
     }
@@ -185,9 +192,6 @@ const game = (function (gameGrid) {
     const minimax = function (gameGrid, player, depth) {
 
         //Base case
-        // debugger;
-
-        // console.log(JSON.stringify(moves));
         let winner = checkForWins();
         if (winner !== null) {
 
@@ -247,12 +251,10 @@ const game = (function (gameGrid) {
 
             //Restoring the grid to its original state
             gameGrid[id].moveMark = backup;
-            // gamedGrid[id].removeAttribute("moveMark");
             markedCell[id] = false;
 
             //Saving the move to further evaluate the moves based on their weight 
             moves.push(move);
-            // console.log(JSON.stringify(moves));
 
         }
 
@@ -290,11 +292,36 @@ const game = (function (gameGrid) {
 
 
         }
-
-
-        // console.log("best " +bestMove);
         return bestMove;
+    }
 
+
+    const restart = function(){
+
+        turns = 9;
+
+        resultModal.style.display = "none";
+
+        for (let i=0; i<markedCell.length; i++)
+          markedCell[i] = false;
+
+        for(let i=0; i<gameGrid.length; i++){
+            gameGrid[i].moveMark = undefined;
+            gameGrid[i].innerHTML = "";
+            gameGrid[i].addEventListener("click", gameBoard.playGame);
+            gameGrid[i].addEventListener("click", () => {
+                humanPlayerSFX.play();
+            })
+            gameGrid[i].style.color = "white";
+            gameGrid[i].style.fontSize = "80px";
+
+            
+        }
+
+        losingSFX.pause(); 
+        losingSFX.currentTime = 0; 
+        tyingSFX.pause(); 
+        tyingSFX.currentTime = 0; 
 
     }
 
@@ -303,6 +330,7 @@ const game = (function (gameGrid) {
         playComputerTurn,
         checkForEnd,
         minimax,
+        restart
     }
 
 
@@ -317,12 +345,33 @@ const game = (function (gameGrid) {
 const gameBoard = (function (gameGrid) {
 
 
-    const _declareWinner = function (winner) {
-        for (let i = 0; i < gameGrid.length; i++) {
-            gameGrid[i].removeEventListener("click", gameBoard.playGame);
+    const _declareWinner = function (winner) {          
+
+        for (let i=0; i<winner.winningSequence.length; i++){
+            gameGrid[winner.winningSequence[i]].style.color = "grey";
+            gameGrid[winner.winningSequence[i]].style.fontSize = "90px";
+
         }
 
-        alert("player " + winner + " has won the game");
+        setTimeout(function(){
+            resultModal.style.display = "block";
+            if (winner.winnerMark === computerPlayer.getPlayerMark()){
+                resultText.textContent = "You Lose!";
+
+            }
+
+            else if (winner.winnerMark == humanPlayer.getPlayerMark()){
+                resultText.innerHTML = "You Win!";
+            }
+        }, 500);
+
+        for (let i = 0; i < gameGrid.length; i++) {
+            gameGrid[i].removeEventListener("click", gameBoard.playGame);
+            gameGrid[i].removeEventListener("click", () => {
+                humanPlayerSFX.play()});
+        }
+
+        losingSFX.play();
 
     }
 
@@ -342,7 +391,7 @@ const gameBoard = (function (gameGrid) {
             setTimeout(function () {
                 winner = game.checkForWins();
                 if (winner != null) {
-                    _declareWinner(winner.winnerMark);
+                    _declareWinner(winner);
                 }
 
             }, 10);
@@ -350,23 +399,29 @@ const gameBoard = (function (gameGrid) {
 
             setTimeout(function () {
                 if (game.checkForEnd() == true && winner == null) {
-                    alert("game has tied");
+                    tyingSFX.play();
+                    resultModal.style.display = "block";
+                        resultText.innerHTML= "TIE";
+        
+        
                 }
 
-            },20)
+            },15)
 
 
             setTimeout(function () {
                 if (winner == null) {
-                    setTimeout(game.playComputerTurn, 40);
+                    setTimeout(game.playComputerTurn, 100);
 
                     setTimeout(function () {
                         winner = game.checkForWins();
-                        if (winner != null)
-                            _declareWinner(winner.winnerMark);
-                    }, 50);
+                        if (winner != null){
+                            _declareWinner(winner);
+                        }
+                            
+                    }, 120);
                 }
-            },30);
+            },20);
 
 
 
@@ -374,14 +429,7 @@ const gameBoard = (function (gameGrid) {
     }
 
 
-
-    // const addMove = function (player, move) {
-    //     player.addMove(move);
-    //     playGame(player.getPlayerMark(), move.getCoordinates());
-    // }
-
     return {
-        // addMove,
         playGame,
     }
 
@@ -392,6 +440,11 @@ const gameBoard = (function (gameGrid) {
 
 for (let i = 0; i < gameGrid.length; i++) {
     gameGrid[i].addEventListener("click", gameBoard.playGame);
+    gameGrid[i].addEventListener("click", () => {
+        humanPlayerSFX.play();
+    })
+
 }
 
 
+playAgainButton.addEventListener("click",game.restart);
