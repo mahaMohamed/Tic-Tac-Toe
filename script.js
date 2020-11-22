@@ -57,6 +57,7 @@ const gameGrid = document.querySelectorAll(".cells");
 
 
 
+
 /*Player Object created using Factory Design Pattern*/
 const Player = function (playerName, playerMark) {
 
@@ -158,7 +159,7 @@ const game = (function (gameGrid) {
 
         let computerBestMove = minimax(gameGrid, computerPlayer, 0).id;
 
-        gameGrid[computerBestMove].innerHTML = computerPlayer.getPlayerMark();
+        gameGrid[computerBestMove].innerHTML = "<p>" + computerPlayer.getPlayerMark() + "</p>";
         computerPlayerSFX.play();
         markedCell[computerBestMove] = true;
         gameGrid[computerBestMove].moveMark = computerPlayer.getPlayerMark();
@@ -349,7 +350,6 @@ const gameBoard = (function (gameGrid) {
 
         for (let i=0; i<winner.winningSequence.length; i++){
             gameGrid[winner.winningSequence[i]].style.color = "grey";
-            gameGrid[winner.winningSequence[i]].style.fontSize = "90px";
 
         }
 
@@ -380,7 +380,7 @@ const gameBoard = (function (gameGrid) {
         let winner = null;
 
         if (!markedCell[e.target.id]) {
-            e.target.innerHTML = humanPlayer.getPlayerMark();
+            e.target.innerHTML ="<p>" + humanPlayer.getPlayerMark() + "</p>";
             e.target.moveMark = humanPlayer.getPlayerMark();
 
             markedCell[e.target.id] = true;
@@ -419,7 +419,7 @@ const gameBoard = (function (gameGrid) {
                             _declareWinner(winner);
                         }
                             
-                    }, 120);
+                    }, 400);
                 }
             },20);
 
