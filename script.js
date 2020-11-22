@@ -314,7 +314,7 @@ const game = (function (gameGrid) {
                 humanPlayerSFX.play();
             })
             gameGrid[i].style.color = "white";
-            gameGrid[i].style.fontSize = "80px";
+            gameGrid[i].style.fontSize = "60px";
 
             
         }
