@@ -45,7 +45,7 @@ p {
   grid-template-rows: repeat(3, 1fr);
   align-self: center;
   border-collapse: collapse;
-  font-size: 70px;
+  font-size: 60px;
   text-align: center;
 }
 
